@@ -1,8 +1,10 @@
 <?php
 
-require_once 'DBManager.php'; // Include the parent class
+require_once 'DBManagerClient.php'; // Include the parent class : Includes all functions from client db manager
 
-class DBManagerDirecteur extends DBManager {
+
+// Exclusive functions for DBManagerDirecteur
+class DBManagerDirecteur extends DBManagerClient {
     public function __construct($servername, $username, $password, $dbname) {
         parent::__construct($servername, $username, $password, $dbname);
     }

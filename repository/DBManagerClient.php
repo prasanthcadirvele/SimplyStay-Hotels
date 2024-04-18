@@ -19,8 +19,41 @@ class DBManagerClient extends DBManager {
             }
         }
         $conn->close();
-        return $rooms;
+        return $rooms; /* TODO convert all rooms to room class => send $rooms value to another function that exploits associated array and creates a list of array */
     }
+
+    /*
+     * public function createRoomClass($oneRoom){
+     *      $room = new Room();
+     *      $room->setAttribut1($oneRoom['attribut1'])
+     *      ... (other attributs)
+     *      return $room;
+     * }
+     */
+
+    /*
+     * public function createRoomClassList($roomsList){
+     *      $roomClassList = [];
+     *      for $room in $roomList {
+     *          $roomClass[] = $this->createRoomClass($room); // adding to list
+     *      }
+     *      return $roomClassList;
+     * }
+     */
+
+    /* TODO : Create a function to check if a reservation exists for a particular date for a give room */
+
+    /*
+     * public function isRoomFree($dateDebut, $dateFin, $roomNumber){
+     *      check in database => return true if exists else false;
+     * }
+     */
+
+    /*
+     * public makeReservation($roomId, $clientId, $checkInDate, $checkOutDate, $numberOfGuests){
+     *      // function that only inserts data in reservation table
+     * }
+     */
 
     // Effectuer une réservation
     public function makeReservation($roomId, $clientId, $checkInDate, $checkOutDate, $numberOfGuests) {
@@ -43,6 +76,8 @@ class DBManagerClient extends DBManager {
         $conn->close();
         return $reservations;
     }
+
+    /* TODO : convert all reservation details to reservation class */
 
     // Modifier la réservation effectuée
     public function updateReservation($reservationId, $checkInDate, $checkOutDate, $numberOfGuests) {
