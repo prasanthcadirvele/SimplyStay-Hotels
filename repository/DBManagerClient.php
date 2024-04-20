@@ -1,6 +1,8 @@
 <?php
 
 require_once 'DBManager.php'; // Include the parent class
+require_once 'Room.php'; // Include the Room class
+require_once 'Reservation.php'; // Include the Reservation class
 
 class DBManagerClient extends DBManager {
     public function __construct($servername, $username, $password, $dbname) {
@@ -19,47 +21,57 @@ class DBManagerClient extends DBManager {
             }
         }
         $conn->close();
-        return $rooms; /* TODO convert all rooms to room class => send $rooms value to another function that exploits associated array and creates a list of array */
+        return $rooms;
     }
 
-    /*
-     * public function createRoomClass($oneRoom){
-     *      $room = new Room();
-     *      $room->setAttribut1($oneRoom['attribut1'])
-     *      ... (other attributs)
-     *      return $room;
-     * }
-     */
+    // Create a Room object from a room array
+    public function createRoomClass($oneRoom) {
+        $room = new Room($oneRoom['roomNumber'], $oneRoom['type'], $oneRoom['pricePerNight']);
+        // Set other attributes...
+        return $room;
+    }
 
-    /*
-     * public function createRoomClassList($roomsList){
-     *      $roomClassList = [];
-     *      for $room in $roomList {
-     *          $roomClass[] = $this->createRoomClass($room); // adding to list
-     *      }
-     *      return $roomClassList;
-     * }
-     */
+    // Create a list of Room objects from a list of room arrays
+    public function createRoomClassList($roomsList) {
+        $roomClassList = [];
+        foreach ($roomsList as $room) {
+            $roomClassList[] = $this->createRoomClass($room);
+        }
+        return $roomClassList;
+    }
 
-    /* TODO : Create a function to check if a reservation exists for a particular date for a give room */
+    // Create a Reservation object from a reservation array
+    public function createReservationClass($oneReservation) {
+        $reservation = new Reservation($oneReservation['user'], $oneReservation['room'], $oneReservation['reservationDebut'], $oneReservation['reservationFin'], $oneReservation['nombreDePersonnes']);
+        // Set check-in and check-out dates if available
+        if (isset($oneReservation['checkInDate'])) {
+            $reservation->setReservationDebut($oneReservation['checkInDate']);
+        }
+        if (isset($oneReservation['checkOutDate'])) {
+            $reservation->setReservationFin($oneReservation['checkOutDate']);
+        }
+        // Set other attributes if needed
+        return $reservation;
+    }
 
-    /*
-     * public function isRoomFree($dateDebut, $dateFin, $roomNumber){
-     *      check in database => return true if exists else false;
-     * }
-     */
+    // Create a list of Reservation objects from a list of reservation arrays
+    public function createReservationClassList($reservationsList) {
+        $reservationClassList = [];
+        foreach ($reservationsList as $reservation) {
+            $reservationClassList[] = $this->createReservationClass($reservation);
+        }
+        return $reservationClassList;
+    }
 
-    /*
-     * public makeReservation($roomId, $clientId, $checkInDate, $checkOutDate, $numberOfGuests){
-     *      // function that only inserts data in reservation table
-     * }
-     */
-
-    // Effectuer une réservation
-    public function makeReservation($roomId, $clientId, $checkInDate, $checkOutDate, $numberOfGuests) {
+    // Create a function to check if a reservation exists for a particular date for a given room
+    public function isRoomFree($dateDebut, $dateFin, $roomNumber) {
         $conn = $this->getConnection();
-        // Ajoutez ici le code pour insérer une nouvelle réservation dans la base de données
-        // Assurez-vous de gérer les vérifications de disponibilité de la chambre, etc.
+        $sql = "SELECT COUNT(*) as count FROM reservation WHERE room_id = $roomNumber AND check_in_date <= '$dateFin' AND check_out_date >= '$dateDebut'";
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $count = $row['count'];
+        $conn->close();
+        return $count == 0; // True if room is free, false otherwise
     }
 
     // Consulter les réservations par le client
@@ -77,23 +89,33 @@ class DBManagerClient extends DBManager {
         return $reservations;
     }
 
-    /* TODO : convert all reservation details to reservation class */
+    // Effectuer une réservation
+    public function makeReservation($roomId, $clientId, $checkInDate, $checkOutDate, $numberOfGuests) {
+        $conn = $this->getConnection();
+        $sql = "INSERT INTO reservation (room_id, client_id, check_in_date, check_out_date, number_of_guests) VALUES ($roomId, $clientId, '$checkInDate', '$checkOutDate', $numberOfGuests)";
+        $result = $conn->query($sql);
+        $conn->close();
+        return $result;
+    }
 
     // Modifier la réservation effectuée
     public function updateReservation($reservationId, $checkInDate, $checkOutDate, $numberOfGuests) {
         $conn = $this->getConnection();
-        // Ajoutez ici le code pour mettre à jour une réservation existante dans la base de données
-        // Assurez-vous de vérifier que la réservation peut être modifiée, etc.
+        $sql = "UPDATE reservation SET check_in_date = '$checkInDate', check_out_date = '$checkOutDate', number_of_guests = $numberOfGuests WHERE id = $reservationId";
+        $result = $conn->query($sql);
+        $conn->close();
+        return $result;
     }
 
     // Annuler la réservation effectuée
     public function cancelReservation($reservationId) {
         $conn = $this->getConnection();
-        // Ajoutez ici le code pour annuler une réservation dans la base de données
-        // Assurez-vous de vérifier que la réservation peut être annulée, etc.
+        $sql = "DELETE FROM reservation WHERE id = $reservationId";
+        $result = $conn->query($sql);
+        $conn->close();
+        return $result;
     }
 
-    // Ajoutez d'autres méthodes spécifiques au client selon vos besoins
+    // Other methods...
 }
 
-?>

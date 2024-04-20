@@ -65,7 +65,7 @@ if (isset($_GET['room_id'])) {
                         <select class="form-control" style="height: fit-content" id="hotel_select" name="hotel_id">
                             <option value="-1">Charger Tous</option>
                             <?php
-                            $room = $dbManager->getAllRoom();
+                            $room = $dbManager->getAllRooms();
                             foreach ($rooms as $room) {
                                 echo '<option value="' . $room->getHotel()->getHotelId() . '">' . $room->getHotel()->getName() . '</option>';
                             }

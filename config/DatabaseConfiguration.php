@@ -20,8 +20,8 @@ class DatabaseConfiguration
     {
         $this->host = "localhost";
         $this->dbname = "hotel_management";
-        $this->username = "user_hotel_management";
-        $this->password = "Secret@!123";
+        $this->username = "root";
+        $this->password = "";
     }
 
     public function getHost()
