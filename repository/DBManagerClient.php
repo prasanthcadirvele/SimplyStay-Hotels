@@ -1,7 +1,6 @@
 <?php
 
 require_once 'DBManager.php'; // Include the parent class
-require_once 'Room.php'; // Include the Room class
 require_once 'Reservation.php'; // Include the Reservation class
 
 class DBManagerClient extends DBManager {
@@ -22,6 +21,29 @@ class DBManagerClient extends DBManager {
         }
         $conn->close();
         return $rooms;
+    }
+
+    /**
+     * Get room by room ID
+     * 
+     * @param int $room_id The ID of the room
+     * @return Room|null The room object if found, null otherwise
+     */
+    public function getRoomByRoomId($room_id) {
+        // Assuming you have a 'rooms' table in your database
+        $sql = "SELECT * FROM rooms WHERE room_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $room_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows == 1) {
+            $row = $result->fetch_assoc();
+            $room = new Room($row['room_id'], $row['room_number'], $row['room_type'],); // Adjust based on your Room class
+            return $room;
+        } else {
+            return null;
+        }
     }
 
     // Create a Room object from a room array

@@ -1,39 +1,38 @@
 <?php
 
-require_once '../repository/DBManager.php';
+require_once '../repository/DBManagerClient.php';
+
 
 session_start();
-error_reporting(0);
 
 if (!isset($_SESSION['username'])) {
     header('Location: login.php');
     exit();
 }
 
-$dbManager = new DBManager();
+$dbManager = new DBManager($servername, $username, $password, $dbname);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $reservation_debut = $_POST['reservation_debut'];
     $fin_reservation = $_POST['fin_reservation'];
     $nombre_de_nuits = $_POST['nombre_de_nuits'];
-    $hotel_id = $_POST['hotel_id'];
     $room_id = $_POST['room_id'];
 
     $username = $_SESSION['username'];
 
-    $reservation = $dbManager->checkAndMakeReservation($reservation_debut, $fin_reservation, $nombre_de_nuits, $username, $hotel_id, $room_id);
+    $reservation = $dbManagerClient->checkAndMakeReservation($reservation_debut, $fin_reservation, $nombre_de_nuits, $username, $hotel_id, $room_id);
 
     if ($reservation) {
-        header('Location: mesreservations.php');
+        header('Location: my_reservation.php');
         exit();
     } else {
         $_SESSION['reservation_error'] = "La réservation n'est malheureusement pas possible, car toutes les chambres sont occupées.";
-        header('Location: reservation.php?hotel_id=' . $hotel_id);
+        header('Location: reservation.php?Room_id=' . $Room_id);
     }
 } else {
 
-    if (isset($_GET['hotel_id'])) {
+    if (isset($_GET['Room_id'])) {
 
 ?>
         <!DOCTYPE html>
@@ -56,10 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                            <li class="nav-item"><a class="nav-link" href="hotel_list.php">Liste des Hôtels</a></li>
+                            <li class="nav-item"><a class="nav-link" href="room_list.php">Liste des Hôtels</a></li>
                             <?php
                             if (isset($_SESSION['username']) && isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']) {
-                                echo '<li class="nav-item"><a class="nav-link" href="mesreservations.php">Mes Réservations</a></li>';
+                                echo '<li class="nav-item"><a class="nav-link" href="my_reservation.php">Mes Réservations</a></li>';
                                 echo '<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>';
                             } else {
                                 echo '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>';
@@ -98,17 +97,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <label class="form-control-label px-3">Chambre<span class="text-danger"> *</span></label>
                                         <select class="form-control" id="room_select" name="room_id" required>
                                             <?php
-                                            $hotelId = $_GET['hotel_id'];
-                                            $rooms = $dbManager->getAllRoomsByHotel($hotelId);
+                                            $rooms = $dbManagerClient->getAllRooms();
                                             foreach ($rooms as $room) {
-                                                echo '<option value="' . $room->getRoomId() . '">' . $room->getRoomNumber() . '</option>';
+                                                echo '<option value="' . $Room->getRoomId() . '">' . $Room->getRoomNumber() . '</option>';
                                             }
                                             ?>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="row justify-content-end">
-                                    <input type="hidden" name="hotel_id" value="<?php echo $_GET['hotel_id']; ?>">
+                                    <input type="hidden" name="room_id" value="<?php echo $_GET['room_id']; ?>">
                                     <div class="form-group col-sm-2"> <button type="submit" class="btn-block" style="background-color: #215294; color: white">Réserver</button> </div>
                                 </div>
                                 <?php
@@ -124,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php
     } else {
-        header('Location: hotel_list.php');
+        header('Location: room_list.php');
     }
 }
 ?>

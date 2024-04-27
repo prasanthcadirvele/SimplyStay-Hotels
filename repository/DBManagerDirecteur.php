@@ -1,6 +1,6 @@
 <?php
 
-require_once 'DBManagerClient.php'; // Include the parent class : Includes all functions from client db manager
+require_once '../repository/DBManagerClient.php'; // Include the parent class : Includes all functions from client db manager
 
 // Exclusive functions for DBManagerDirecteur
 class DBManagerDirecteur extends DBManagerClient {
@@ -145,6 +145,4 @@ class DBManagerDirecteur extends DBManagerClient {
 
     // Add more functions specific to the director's tasks as needed
 }
-
-?>
 

@@ -1,6 +1,6 @@
 <?php
 
-require_once '../repository/DBManager.php';
+require_once '../repository/DBManagerClient.php';
 
 session_start();
 
@@ -12,7 +12,7 @@ if (!isset($_SESSION['username']) || !$_SESSION['user_logged_in']) {
 $dbManager = new DBManager($servername, $username, $password, $dbname);
 
 // Retrieve reservations for the current user
-$reservations = $dbManager->getReservationsByUser($_SESSION['username']);
+$reservations = $dbManagerClient->getReservationsByUser($_SESSION['username']);
 
 ?>
 

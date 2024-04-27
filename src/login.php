@@ -1,47 +1,38 @@
 <?php
 
-require_once '../repository/DBManager.php';
 require_once '../config/DatabaseConfiguration.php';
+require_once '../repository/DBManager.php';
 
 use config\DatabaseConfiguration; // Import the DatabaseConfiguration class
 
 session_start();
 
-// Step 1: Check if user is already logged in
-if(isset($_SESSION['username']) && $_SESSION['user_logged_in']) {
-	header('Location: home.php');
-	exit();
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "hotel_management";
+
+// Create DBManager instance
+$dbManager = new DBManager($servername, $username, $password, $dbname);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    if ($dbManager->verifyUser($username, $password)) {
+        $_SESSION['username'] = $username;
+        $_SESSION['user_logged_in'] = true;
+        header('Location: index.php');
+        exit();
+    } else {
+        $_SESSION['login_error'] = 'Echec d\'authentification';
+        header('Location: login.php');
+        exit();
+    }
 }
-
-if($_SERVER['REQUEST_METHOD'] === 'POST') {
-	$username = $_POST['username'];
-	$password = $_POST['password'];
-
-	// Initialize DatabaseConfiguration and retrieve connection credentials
-	$databaseConfig = new DatabaseConfiguration();
-	$servername = $databaseConfig->getHost();
-	$username_db = $databaseConfig->getUsername();
-	$password_db = $databaseConfig->getPassword();
-	$dbname = $databaseConfig->getDbname();
-
-	// Create a new DBManager instance with connection credentials
-	$dbManager = new DBManager($servername, $username_db, $password_db, $dbname);
-
-	if($dbManager->verifyUser($username, $password)){
-		$_SESSION['username'] = $username;
-		$_SESSION['user_logged_in'] = true;
-		header('Location: index.php');
-		exit();
-	}else{
-		$_SESSION['login_error'] = 'Echec d\'authentification';
-		header('Location: login.php');
-		exit();
-	}
-}
-
-if($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 ?>
+
 
 <!doctype html>
 <html lang="en">
@@ -69,7 +60,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET') {
 					<li class="nav-item"><a class="nav-link" href="room_list.php">Book Rooms</a></li>
 					<?php
 					if(isset($_SESSION['username']) && isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']){
-						echo '<li class="nav-item"><a class="nav-link" href="mesreservations.php">Mes Réservations</a></li>';
+						echo '<li class="nav-item"><a class="nav-link" href="my_reservation.php">Mes Réservations</a></li>';
 						echo '<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>';
 					}else{
 						echo '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>';
@@ -87,12 +78,12 @@ if($_SERVER['REQUEST_METHOD'] === 'GET') {
 					<div class="wrap d-md-flex">
 						<div class="img" style="background-image: url(../images/symbol.png); background-size: contain; background-position: center center; background-repeat: no-repeat">
 			      </div>
-						<div class="login-wrap p-4 p-md-5">
-			      	<div class="d-flex">
-			      		<div class="w-100">
+					<div class="login-wrap p-4 p-md-5">
+			      	    <div class="d-flex">
+			      		    <div class="w-100">
 			      			<h3 class="mb-4">Connection</h3>
-			      		</div>
-			      	</div>
+			      		    </div>
+			      	    </div>
 							<form action="login.php" method="post" class="signin-form">
 								<div class="form-group mb-3">
 									<label class="label" for="name">Username</label>
@@ -102,20 +93,19 @@ if($_SERVER['REQUEST_METHOD'] === 'GET') {
 									<label class="label" for="password">Password</label>
 									<input type="password" class="form-control" placeholder="Mot de passe" name="password" required>
 								</div>
-		            <div class="form-group">
-		            	<button type="submit" class="form-control btn btn-primary rounded submit px-3">Sign In</button>
-		            </div>
-		          </form>
-		          <p class="text-center">Don't have an account ? <a href="signup.php">Create Account</a></p>
+		                        <div class="form-group">
+		            	        <button type="submit" class="form-control btn btn-primary rounded submit px-3">Sign In</button>
+		                        </div>
+		                    </form>
+		                    <p class="text-center">Don't have an account ? <a href="signup.php">Create Account</a></p>
 							<?php
 							if (isset($_SESSION['login_error'])) {
 								echo '<p class="text-danger">'.$_SESSION["login_error"].'</p>';
 								unset($_SESSION['login_error']);
 							}
 							?>
+		            </div>
 		        </div>
-		      </div>
-				</div>
 			</div>
 		</div>
 	</section>
@@ -128,6 +118,4 @@ if($_SERVER['REQUEST_METHOD'] === 'GET') {
 	</body>
 </html>
 
-<?php
-}
-?>
+

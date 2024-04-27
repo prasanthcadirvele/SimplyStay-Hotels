@@ -2,104 +2,105 @@
 
 class User
 {
-    private string $nom;
-    private string $prenom;
-    private string $adresse_mail;
+    private string $firstname;
+    private string $lastname;
+    private string $email;
     private int $age;
-    private string $numero_telephone;
+    private string $num_tel;
     private string $username;
     private string $password;
     private string $user_type;
 
-    public function __construct($nom, $prenom, $adresse_mail, $age, $numero_telephone, $username, $password, $user_type)
+    public function __construct($firstname, $lastname, $email, $age, $num_tel, $username, $password, $user_type)
     {
-        $this->nom = $nom;
-        $this->prenom = $prenom;
-        $this->adresse_mail = $adresse_mail;
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
+        $this->email = $email;
         $this->age = $age;
-        $this->numero_telephone = $numero_telephone;
+        $this->num_tel = $num_tel;
         $this->username = $username;
         $this->password = $password;
         $this->user_type = $user_type;
     }
 
-    public function getNom()
+    public function getFirstname(): string
     {
-        return $this->nom;
+        return $this->firstname;
     }
 
-    public function setNom($nom)
+    public function setFirstname(string $firstname): void
     {
-        $this->nom = $nom;
+        $this->firstname = $firstname;
     }
 
-    public function getPrenom()
+    public function getLastname(): string
     {
-        return $this->prenom;
+        return $this->lastname;
     }
 
-    public function setPrenom($prenom)
+    public function setLastname(string $lastname): void
     {
-        $this->prenom = $prenom;
+        $this->lastname = $lastname;
     }
 
-    public function getAdresseMail()
+    public function getEmail(): string
     {
-        return $this->adresse_mail;
+        return $this->email;
     }
 
-    public function setAdresseMail($adresse_mail)
+    public function setEmail(string $email): void
     {
-        $this->adresse_mail = $adresse_mail;
+        $this->email = $email;
     }
 
-    public function getAge()
+    public function getAge(): int
     {
         return $this->age;
     }
 
-    public function setAge($age)
+    public function setAge(int $age): void
     {
         $this->age = $age;
     }
 
-    public function getNumeroTelephone()
+    public function getNumTel(): string
     {
-        return $this->numero_telephone;
+        return $this->num_tel;
     }
 
-    public function setNumeroTelephone($numero_telephone)
+    public function setNumTel(string $num_tel): void
     {
-        $this->numero_telephone = $numero_telephone;
+        $this->num_tel = $num_tel;
     }
 
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->username;
     }
 
-    public function setUsername($username)
+    public function setUsername(string $username): void
     {
         $this->username = $username;
     }
 
-    public function getPassword()
+    public function getPassword(): string
     {
         return $this->password;
     }
 
-    public function setPassword($password)
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }
 
-    public function getUser_type()
+    public function getUserType(): string
     {
         return $this->user_type;
     }
 
-    public function setUser_type($user_type)
+    public function setUserType(string $user_type): void
     {
         $this->user_type = $user_type;
     }
 }
+

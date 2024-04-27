@@ -2,6 +2,7 @@
 
 class Room
 {
+    private int $id;
     private string $roomNumber;
     private string $type;
     private float $pricePerNight;
@@ -17,6 +18,22 @@ class Room
         $this->roomNumber = $roomNumber;
         $this->type = $type;
         $this->pricePerNight = $pricePerNight;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     /**
