@@ -35,12 +35,12 @@ $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Book Rooms</a>
+                    <a class="nav-link" href="room_list.php">Book Rooms</a>
                 </li>
                 <?php if (!$isAdmin) { ?>
                 <!-- Normal user links -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Contact</a>
+                    <a class="nav-link" href="contact.php">Contact</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
@@ -48,10 +48,10 @@ $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
                         <i class="fa fa-user"></i>
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#">My Reservations</a>
+                        <a class="dropdown-item" href="my_reservation.php">My Reservations</a>
                         <a class="dropdown-item" href="#">My Account</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Logout</a>
+                        <a class="dropdown-item" href="logout.php">Logout</a>
                     </div>
                 </li>
                 <?php } else { ?>
@@ -77,7 +77,7 @@ $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <a class="dropdown-item" href="#">My Account</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Logout</a>
+                        <a class="dropdown-item" href="logout.php">Logout</a>
                     </div>
                 </li>
                 <?php } ?>

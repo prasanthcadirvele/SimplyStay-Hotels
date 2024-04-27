@@ -1,19 +1,27 @@
 <?php
-
+// Include the necessary files
 require_once '../repository/DBManagerClient.php';
+require_once '../config/DatabaseConfiguration.php';
 
 session_start();
 
+// Define your database connection details here
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "hotel_management";
+
 $dbManagerClient = new DBManagerClient($servername, $username, $password, $dbname);
 
-if (isset($_GET['room_id'])) {
-    $room_id = $_GET['room_id'];
-    if ($room_id == -1) {
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    if($id == -1){
         header('Location: room_list.php');
         exit(0);
     }
-    $rooms = $dbManagerClient->getRoomByRoomId($room_id);
+    $Room = $dbManagerClient->getRoomByRoomId($id);
 } else {
+    // Fetch all rooms
     $rooms = $dbManagerClient->getAllRooms();
 }
 
@@ -21,72 +29,65 @@ if (isset($_GET['room_id'])) {
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Hotel Management - Liste des Chambres</title>
-    <link href="../css/style.css" rel="stylesheet" />
-    <link href="../css/styles.css" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room List</title>
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="../css/styles.css" rel="stylesheet">
 </head>
-
 <body>
-    <!-- Responsive navbar-->
-    <nav class="navbar navbar-expand-lg" style="background-color: #E3B04B; color: black;">
-        <div class="container px-5">
-            <a class="navbar-brand" href="index.php">Hotel Booking</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <?php
-                    if (isset($_SESSION['username']) && isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']) {
-                        echo '<li class="nav-item"><a class="nav-link" href="my_reservation.php">Mes Réservations</a></li>';
-                        echo '<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>';
-                        
-                        // Check if the user is an admin
-                        if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin') {
-                            echo '<li class="nav-item"><a class="nav-link" href="#">Ajouter</a></li>';
-                        }
-                    } else {
-                        echo '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>';
-                    }
-                    ?>
-                    <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-        <div class="row gx-4 gx-lg-5 m-5">
-            <form method="get" class="form-inline" style="justify-content: end">
-                <div class="justify-content-between" style="display: flex">
-                    <div class="col-md-4 mb-3" style="margin: auto; padding-right: 0">
-                        <button type="submit" class="btn" style="display: inline-grid;background-color: #215294; color: white">Filtrer</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div class="row gx-4 gx-lg-5 m-5">
-            <?php
-            foreach ($rooms as $room) {
-            ?>
-                <div class="col-md-4 mb-5">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h2 class="card-title">Chambre <?php echo $room->getRoomNumber() ?></h2>
-                            <p class="card-text">
-                                <?php echo 'Type: ' . $room->getRoomType() . '<br>' . 'Prix par Nuit: ' . $room->getPricePerNight() . ' €' ?>
-                            </p>
-                        </div>
-                        <div class="card-footer"><a class="btn btn-sm" style="background-color: #215294; color: white" href="reservation.php?room_id=<?php echo $room->getRoomId() ?>">Réserver</a></div>
-                    </div>
-                </div>
-            <?php
-            }
-            ?>
+        <a class="navbar-brand" href="#">SimpleStay Hotels</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <?php if(isset($_SESSION['username']) && isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">My Reservations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Logout</a>
+                    </li>
+                <?php else: ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Login</a>
+                    </li>
+                <?php endif; ?>
+            </ul>
         </div>
     </div>
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="row">
+        <?php if(isset($rooms)): ?>
+            <?php foreach ($rooms as $room): ?>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="card-title"><?php echo $room->getRoomType()->getName(); ?></h4>
+                            <p class="card-text"><?php echo $room->getRoomType()->getDescription(); ?></p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
