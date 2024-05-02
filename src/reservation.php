@@ -10,18 +10,19 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-$dbManager = new DBManager($servername, $username, $password, $dbname);
+$dbManagerClient = new DBManagerClient();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $reservation_debut = $_POST['reservation_debut'];
     $fin_reservation = $_POST['fin_reservation'];
-    $nombre_de_nuits = $_POST['nombre_de_nuits'];
+    $nombre_de_personnes = $_POST['nombre_de_personnes'];
     $room_id = $_POST['room_id'];
 
     $username = $_SESSION['username'];
+    $userId = $_SESSION['user_id'];
 
-    $reservation = $dbManagerClient->checkAndMakeReservation($reservation_debut, $fin_reservation, $nombre_de_nuits, $username, $hotel_id, $room_id);
+    $reservation = $dbManagerClient->makeReservation($room_id, $userId, $reservation_debut, $fin_reservation, $nombre_de_personnes);
 
     if ($reservation) {
         header('Location: my_reservation.php');
@@ -89,8 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                                 <div class="row justify-content-between text-left">
                                     <div class="form-group col-sm-6 flex-column d-flex">
-                                        <label class="form-control-label px-3">Nombre de Nuits<span class="text-danger"> *</span></label>
-                                        <input type="number" id="nombre_de_nuits" name="nombre_de_nuits" placeholder="Nombre de nuits" required>
+                                        <label class="form-control-label px-3">Nombre d'invités <span class="text-danger"> *</span></label>
+                                        <input type="number" id="nombre_de_nuits" name="nombre_de_personnes" placeholder="Nombre de personnes" required>
                                     </div>
 
                                     <div class="form-group col-sm-6 flex-column d-flex">

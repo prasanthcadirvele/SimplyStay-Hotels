@@ -4,14 +4,14 @@ require_once '../repository/DBManagerClient.php'; // Include the parent class : 
 
 // Exclusive functions for DBManagerDirecteur
 class DBManagerDirecteur extends DBManagerClient {
-    public function __construct($servername, $username, $password, $dbname) {
-        parent::__construct($servername, $username, $password, $dbname);
+    public function __construct() {
+        parent::__construct();
     }
 
     // Function to get all users
     public function getAllUsers() {
         $conn = $this->getConnection();
-        $sql = "SELECT * FROM User";
+        $sql = "SELECT * FROM _user";
         $result = $conn->query($sql);
         $users = array();
         if ($result->num_rows > 0) {
@@ -41,7 +41,7 @@ class DBManagerDirecteur extends DBManagerClient {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         // Prepare SQL statement
-        $stmt = $conn->prepare("INSERT INTO User (firstname, lastname, email, age, num_tel, username, password, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO _user (firstname, lastname, email, age, num_tel, username, password, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssissss", $firstname, $lastname, $email, $age, $num_tel, $username, $hashedPassword, $userType);
 
         // Execute the statement

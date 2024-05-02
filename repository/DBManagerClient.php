@@ -4,8 +4,8 @@ require_once 'DBManager.php'; // Include the parent class
 require_once 'Reservation.php'; // Include the Reservation class
 
 class DBManagerClient extends DBManager {
-    public function __construct($servername, $username, $password, $dbname) {
-        parent::__construct($servername, $username, $password, $dbname);
+    public function __construct() {
+        parent::__construct();
     }
 
     // Consulter les annonces de chambres proposées

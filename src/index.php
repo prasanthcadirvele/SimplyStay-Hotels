@@ -9,7 +9,7 @@ if (!isset($_SESSION['username']) || !isset($_SESSION['user_logged_in']) || !$_S
 }
 
 // Check if the user is an admin
-$isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
+$isAdmin = isset($_SESSION['user_type']) && $_SESSION['user_type']=='admin';
 ?>
 
 <!DOCTYPE html>

@@ -2,6 +2,7 @@
 
 class User
 {
+    private int $id;
     private string $firstname;
     private string $lastname;
     private string $email;
@@ -11,8 +12,9 @@ class User
     private string $password;
     private string $user_type;
 
-    public function __construct($firstname, $lastname, $email, $age, $num_tel, $username, $password, $user_type)
+    public function __construct($id, $firstname, $lastname, $email, $age, $num_tel, $username, $password, $user_type)
     {
+        $this->id = $id;
         $this->firstname = $firstname;
         $this->lastname = $lastname;
         $this->email = $email;
@@ -21,6 +23,16 @@ class User
         $this->username = $username;
         $this->password = $password;
         $this->user_type = $user_type;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     public function getFirstname(): string

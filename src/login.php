@@ -7,26 +7,24 @@ use config\DatabaseConfiguration; // Import the DatabaseConfiguration class
 
 session_start();
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "hotel_management";
-
 // Create DBManager instance
-$dbManager = new DBManager($servername, $username, $password, $dbname);
+$dbManager = new DBManager();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
     if ($dbManager->verifyUser($username, $password)) {
+        $user = $dbManager->getUserByUsername($username);
         $_SESSION['username'] = $username;
         $_SESSION['user_logged_in'] = true;
-        header('Location: index.php');
+        $_SESSION['user_id'] = $user->getId();
+        $_SESSION['user_type'] = $user->getUserType();
+        // header('Location: index.php');
         exit();
     } else {
         $_SESSION['login_error'] = 'Echec d\'authentification';
-        header('Location: login.php');
+        // header('Location: login.php');
         exit();
     }
 }

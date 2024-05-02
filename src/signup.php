@@ -30,13 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         // Create User instance
-        $user = new User($nom, $prenom, $adresse_mail, $age, $numero_telephone, $username, $hashedPassword, 'client'); // Assuming user_type is 'client'
+        $user = new User(-1, $nom, $prenom, $adresse_mail, $age, $numero_telephone, $username, $hashedPassword, 'normal'); // Assuming user_type is 'client'
 
         // Insert user into database
         $dbManager->insertUser($user);
 
         // Redirect to login page after successful signup
-        header('Location: login.php');
+        // header('Location: login.php');
         exit();
     } else {
         $_SESSION['sign_up_error'] = 'L\'utilisateur avec cet username existe déjà';

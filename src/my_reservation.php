@@ -9,7 +9,7 @@ if (!isset($_SESSION['username']) || !$_SESSION['user_logged_in']) {
     exit();
 }
 
-$dbManager = new DBManager($servername, $username, $password, $dbname);
+$dbManagerClient = new DBManagerClient();
 
 // Retrieve reservations for the current user
 $reservations = $dbManagerClient->getReservationsByUser($_SESSION['username']);

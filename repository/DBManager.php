@@ -6,11 +6,11 @@ class DBManager {
     protected $password;
     protected $dbname;
 
-    public function __construct($servername, $username, $password, $dbname) {
-        $this->servername = $servername;
-        $this->username = $username;
-        $this->password = $password;
-        $this->dbname = $dbname;
+    public function __construct() {
+        $this->servername = "localhost";
+        $this->username = "postgres";
+        $this->password = "";
+        $this->dbname = "hotel_prasha";
     }
 
     public function getConnection() {
@@ -26,14 +26,14 @@ class DBManager {
     public function verifyUser($username, $password): bool {
         $this->getConnection();
 
-        $stmt = $this->conn->prepare("SELECT * FROM User WHERE username=? AND password=?");
-        $stmt->bind_param("ss", $username, $password);
+        $stmt = $this->conn->prepare("SELECT * FROM _user WHERE username=?");
+        $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
         $user = $result->fetch_assoc();
 
         $this->closeConnection();
-        return $user !== null;
+        return $user !== null && password_verify($password, $user['password']);
     }
 
     public function closeConnection(): void {
@@ -58,7 +58,7 @@ class DBManager {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         
         // Prepare SQL statement
-        $stmt = $conn->prepare("INSERT INTO User (firstname, lastname, email, age, num_tel, username, password, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO _user (firstname, lastname, email, age, num_tel, username, password, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssissss", $firstname, $lastname, $email, $age, $num_tel, $username, $hashedPassword, $user_type);
         
         // Execute the statement
@@ -74,7 +74,7 @@ class DBManager {
     public function usernameExists($username) {
         $conn = $this->getConnection();
 
-        $stmt = $conn->prepare("SELECT * FROM User WHERE username = ?");
+        $stmt = $conn->prepare("SELECT * FROM _user WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -85,6 +85,22 @@ class DBManager {
 
         return $user !== null;
     }
+
+    public function getUserByUsername($username){
+        $conn = $this->getConnection();
+
+        $stmt = $conn->prepare("SELECT * FROM _user WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+
+        $stmt->close();
+        $conn->close();
+
+        return new User($user['id'], $user['firstname'], $user['lastname'], $user['email'], null, null, $user['username'], null, $user['user_type']);
+    }
+
 }
 
 

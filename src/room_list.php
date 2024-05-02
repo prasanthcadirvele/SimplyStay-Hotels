@@ -6,12 +6,8 @@ require_once '../config/DatabaseConfiguration.php';
 session_start();
 
 // Define your database connection details here
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "hotel_management";
 
-$dbManagerClient = new DBManagerClient($servername, $username, $password, $dbname);
+$dbManagerClient = new DBManagerClient();
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
