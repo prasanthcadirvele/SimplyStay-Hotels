@@ -7,17 +7,43 @@ class Room
     private string $type;
     private float $pricePerNight;
 
+    private string $description;
+
+    private string $thumbnailUrl;
+
     /**
      * Room constructor.
      * @param string $roomNumber
      * @param string $type
      * @param float $pricePerNight
      */
-    public function __construct(string $roomNumber, string $type, float $pricePerNight)
+    public function __construct(string $roomNumber, string $type, float $pricePerNight, string $description, string $thumbnailUrl)
     {
         $this->roomNumber = $roomNumber;
         $this->type = $type;
         $this->pricePerNight = $pricePerNight;
+        $this->description = $description;
+        $this->thumbnailUrl = $thumbnailUrl;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    public function getThumbnailUrl(): string
+    {
+        return $this->thumbnailUrl;
+    }
+
+    public function setThumbnailUrl(string $thumbnailUrl): void
+    {
+        $this->thumbnailUrl = $thumbnailUrl;
     }
 
     /**

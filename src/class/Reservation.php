@@ -2,6 +2,7 @@
 
 class Reservation
 {
+    private ?int $id;
     private User $user;
     private Room $room;
     private $reservationDebut;
@@ -16,13 +17,24 @@ class Reservation
      * @param $reservationFin
      * @param $nombreDePersonnes
      */
-    public function __construct(User $user, Room $room, $reservationDebut, $reservationFin, $nombreDePersonnes)
+    public function __construct(int $id, User $user, Room $room, $reservationDebut, $reservationFin, $nombreDePersonnes)
     {
+        $this->id = $id;
         $this->user = $user;
         $this->room = $room;
         $this->reservationDebut = $reservationDebut;
         $this->reservationFin = $reservationFin;
         $this->nombreDePersonnes = $nombreDePersonnes;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
     }
 
     /**

@@ -1,16 +1,15 @@
 <?php
 
-require_once '../repository/DBManagerClient.php';
 require_once '../repository/DBManagerDirecteur.php';
 
 session_start();
 
-$dbManagerClient = new DBManagerClient();
+$dbManagerDirecteur = new DBManagerDirecteur();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $reservation_id = $_POST['reservation_id'];
-    $dbManagerClient->deleteReservation($reservation_id);
-    header('Location: my_reservation.php');
+    $user_id = $_POST['user_id'];
+    $dbManagerDirecteur->deleteUser($user_id);
+    header('Location: users.php');
 }
 
 if (!isset($_SESSION['username']) || !$_SESSION['user_logged_in']) {
@@ -18,18 +17,13 @@ if (!isset($_SESSION['username']) || !$_SESSION['user_logged_in']) {
     exit();
 }
 
-if($_SESSION['user_type']=='admin'){
-    $dbManagerDirecteur = new DBManagerDirecteur();
-    $reservations = $dbManagerDirecteur->getReservations();
-    $navContent = "Reservations en cours";
-}else{
-    $reservations = $dbManagerClient->getReservationsByUser($_SESSION['user_id']);
-    $navContent = "Mes Reservations";
+if(!$_SESSION['user_type']=='admin'){
+    header('Location: login.php');
+    exit();
 }
 
-// Retrieve reservations for the current user
-
-
+$dbManagerDirecteur = new DBManagerDirecteur();
+$users = $dbManagerDirecteur->getAllUsers();
 
 ?>
 
@@ -39,7 +33,7 @@ if($_SESSION['user_type']=='admin'){
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Hotel Management - Mes Réservations</title>
+    <title>Hotel Management - Liste des utilisateurs</title>
     <link href="../css/style.css" rel="stylesheet" />
     <link href="../css/styles.css" rel="stylesheet" />
 </head>
@@ -56,7 +50,7 @@ if($_SESSION['user_type']=='admin'){
 					<?php
 					if(isset($_SESSION['username']) && isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']){
                         echo '<li class="nav-item"><a class="nav-link" href="room_list.php">Liste des Chambres</a></li>';
-						echo '<li class="nav-item"><a class="nav-link" href="my_reservation.php">'.$navContent.'</li>';
+						echo '<li class="nav-item"><a class="nav-link" href="my_reservation.php">Reservations en cours</li>';
 						echo '<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>';
                         if($_SESSION['user_type']=='admin'){
                             echo '<li class="nav-item"><a class="nav-link" href="users.php">Liste des Utilisateurs</a></li>';
@@ -74,50 +68,34 @@ if($_SESSION['user_type']=='admin'){
     <div class="container">
         <div class="mt-4 row justify-content-center">
             <div class="col-md-8">
-                <h2><?php echo $navContent ?></h2>
+                <h2>Liste des utilisateurs</h2>
                 <table class="table table-striped">
                     <thead>
                         <tr>
                             <?php if($_SESSION['user_type']=='admin'){ ?>
-                                <th>Client Name</th>
+                                <th>First Name</th>
                             <?php } ?>
-                            <th>Nom de la Chambre</th>
-                            <th>Prix par Nuit</th>
-                            <th>Réservation Debut</th>
-                            <th>Réservation Fin</th>
-                            <th>Prix Total</th>
-                            <th>Actions</th>
-
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Age</th>
+                            <th>Numéro Tel</th>
+                            <th>Username</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if ($reservations != null) {
-                            foreach ($reservations as $reservation) : ?>
-                            <?php
-                                $start_date = new DateTime($reservation->getReservationDebut());
-                                $end_date = new DateTime($reservation->getReservationFin());
-
-                                // Calculate the difference between the dates
-                                $interval = $start_date->diff($end_date);
-
-                                // Get the difference in days
-                                $number_of_days = $interval->days;
-
-                                ?>
-
+                        <?php if ($users != null) {
+                            foreach ($users as $user) : ?>
                                 <tr>
-                                    <?php if($_SESSION['user_type']=='admin'){ ?>
-                                        <td><?php echo $reservation->getUser()->getFirstname()?> <?php echo $reservation->getUser()->getLastname()?></td>
-                                    <?php } ?>
-                                    <td><?php echo $reservation->getRoom()->getType(); ?></td>
-                                    <td><?php echo $reservation->getRoom()->getPricePerNight(); ?></td>
-                                    <td><?php echo $reservation->getReservationDebut(); ?></td>
-                                    <td><?php echo $reservation->getReservationFin(); ?></td>
-                                    <td><?php echo $number_of_days * $reservation->getRoom()->getPricePerNight(); ?></td>
+                                    <td><?php echo $user->getFirstname(); ?></td>
+                                    <td><?php echo $user->getLastname(); ?></td>
+                                    <td><?php echo $user->getEmail(); ?></td>
+                                    <td><?php echo $user->getAge(); ?></td>
+                                    <td><?php echo $user->getNumTel(); ?></td>
+                                    <td><?php echo $user->getUsername(); ?></td>
                                     <td>
-                                        <form id="deleteForm" action="my_reservation.php" method="post">
+                                        <form id="deleteForm" action="users.php" method="post">
                                             <!-- Hidden input for reservation_id -->
-                                            <input type="hidden" name="reservation_id" id="reservation_id" value="<?php echo $reservation->getId() ?>">
+                                            <input type="hidden" name="user_id" id="user_id" value="<?php echo $user->getId() ?>">
                                             <!-- Delete icon -->
                                             <span class="delete-icon" onclick="document.getElementById('deleteForm').submit();">&#10060;</span>
                                         </form>
@@ -130,11 +108,6 @@ if($_SESSION['user_type']=='admin'){
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap core JS-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Core theme JS-->
-    <script src="../js/scripts.js"></script>
 </body>
 
 </html>

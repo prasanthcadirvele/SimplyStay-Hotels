@@ -2,15 +2,15 @@
 
 class User
 {
-    private int $id;
-    private string $firstname;
-    private string $lastname;
-    private string $email;
-    private int $age;
-    private string $num_tel;
-    private string $username;
-    private string $password;
-    private string $user_type;
+    private ?int $id;
+    private ?string $firstname;
+    private ?string $lastname;
+    private ?string $email;
+    private ?int $age;
+    private ?string $num_tel;
+    private ?string $username;
+    private ?string $password;
+    private ?string $user_type;
 
     public function __construct($id, $firstname, $lastname, $email, $age, $num_tel, $username, $password, $user_type)
     {

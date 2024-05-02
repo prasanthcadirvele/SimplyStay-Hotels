@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $dbManager->insertUser($user);
 
         // Redirect to login page after successful signup
-        // header('Location: login.php');
+        header('Location: login.php');
         exit();
     } else {
         $_SESSION['sign_up_error'] = 'L\'utilisateur avec cet username existe déjà';

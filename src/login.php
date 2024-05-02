@@ -20,11 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_logged_in'] = true;
         $_SESSION['user_id'] = $user->getId();
         $_SESSION['user_type'] = $user->getUserType();
-        // header('Location: index.php');
+        header('Location: index.php');
         exit();
     } else {
         $_SESSION['login_error'] = 'Echec d\'authentification';
-        // header('Location: login.php');
+        header('Location: login.php');
         exit();
     }
 }
@@ -55,13 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-					<li class="nav-item"><a class="nav-link" href="room_list.php">Book Rooms</a></li>
+
 					<?php
 					if(isset($_SESSION['username']) && isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']){
+                        echo '<li class="nav-item"><a class="nav-link" href="room_list.php">Book Rooms</a></li>';
 						echo '<li class="nav-item"><a class="nav-link" href="my_reservation.php">Mes Réservations</a></li>';
 						echo '<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>';
-					}else{
-						echo '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>';
 					}
 					?>
 					<li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>

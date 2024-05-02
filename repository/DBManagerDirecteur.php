@@ -11,16 +11,18 @@ class DBManagerDirecteur extends DBManagerClient {
     // Function to get all users
     public function getAllUsers() {
         $conn = $this->getConnection();
-        $sql = "SELECT * FROM _user";
+        $sql = "SELECT * FROM user";
         $result = $conn->query($sql);
-        $users = array();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $users[] = $row;
-            }
-        }
+        $users = $result->fetch_all(MYSQLI_ASSOC);
+
         $conn->close();
-        return $users;
+
+        $usersObj = [];
+        foreach ($users as $user) {
+            $usersObj[] = $this->getUserById($user["id"]);
+        }
+
+        return $usersObj;
     }
 
     // Function to add a new user
@@ -143,6 +145,110 @@ class DBManagerDirecteur extends DBManagerClient {
         // Return success or failure status
     }
 
+    public function getReservations()
+    {
+        $conn = $this->getConnection();
+
+        $stmt = $conn->prepare("SELECT * FROM reservation");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $reservations = $result->fetch_all(MYSQLI_ASSOC);
+
+        $stmt->close();
+        $conn->close();
+
+        $reservationsObj = [];
+        foreach ($reservations as $reservation){
+            $reservationsObj[] = $this->buildReservationObject($reservation);
+        }
+        return $reservationsObj;
+    }
+
+    public function deleteUser($user_id){
+        $conn = $this->getConnection();
+
+        $stmt = $conn->prepare("DELETE FROM user WHERE id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $stmt->close();
+        $conn->close();
+
+        if($result){
+            return true;
+        }
+
+        return false;
+    }
+
     // Add more functions specific to the director's tasks as needed
+    public function getRoomTypes()
+    {
+        $conn = $this->getConnection();
+
+        $stmt = $conn->prepare("SELECT * FROM roomtype");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $room_types = $result->fetch_all(MYSQLI_ASSOC);
+
+        $conn->close();
+
+        return $room_types;
+    }
+
+    public function insertRoom( $room )
+    {
+        $conn = $this->getConnection();
+
+        // Prepare the SQL statement
+        $sql = "INSERT INTO room (room_number, room_type, price_per_night, room_description, thumbnail_image) VALUES (?, ?, ?, ?, ?)";
+
+        // Prepare the statement
+        $stmt = $conn->prepare($sql);
+
+        // Bind parameters
+        $roomNumber = $room->getRoomNumber();
+        $type = $room->getType();
+        $pricePerNight = $room->getPricePerNight();
+        $description = $room->getDescription();
+        $thumbnailUrl = $room->getThumbnailUrl();
+        $stmt->bind_param("ssdss", $roomNumber, $type, $pricePerNight, $description, $thumbnailUrl);
+        $result = $stmt->execute();
+
+        $stmt->close();
+        $conn->close();
+
+        // Execute the statement
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function insertRoomType($room_type)
+    {
+        $conn = $this->getConnection();
+
+        // Prepare the SQL statement
+        $sql = "INSERT INTO roomtype (room_type) VALUES (?)";
+
+        // Prepare the statement
+        $stmt = $conn->prepare($sql);
+
+        $stmt->bind_param("s", $room_type);
+        $result = $stmt->execute();
+
+        $stmt->close();
+        $conn->close();
+
+        // Execute the statement
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 

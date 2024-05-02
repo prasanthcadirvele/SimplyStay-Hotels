@@ -1,7 +1,8 @@
 <?php
 
 require_once 'DBManager.php'; // Include the parent class
-require_once 'Reservation.php'; // Include the Reservation class
+require_once '../src/class/Reservation.php'; // Include the Reservation class
+require_once '../src/class/Room.php';
 
 class DBManagerClient extends DBManager {
     public function __construct() {
@@ -23,33 +24,23 @@ class DBManagerClient extends DBManager {
         return $rooms;
     }
 
-    /**
-     * Get room by room ID
-     * 
-     * @param int $room_id The ID of the room
-     * @return Room|null The room object if found, null otherwise
-     */
     public function getRoomByRoomId($room_id) {
-        // Assuming you have a 'rooms' table in your database
-        $sql = "SELECT * FROM rooms WHERE room_id = ?";
-        $stmt = $this->conn->prepare($sql);
+        $conn = $this->getConnection();
+
+        $stmt = $conn->prepare("SELECT * FROM room WHERE id = ?");
         $stmt->bind_param("i", $room_id);
         $stmt->execute();
         $result = $stmt->get_result();
+        $room = $result->fetch_assoc();
 
-        if ($result->num_rows == 1) {
-            $row = $result->fetch_assoc();
-            $room = new Room($row['room_id'], $row['room_number'], $row['room_type'],); // Adjust based on your Room class
-            return $room;
-        } else {
-            return null;
-        }
+        $stmt->close();
+        $conn->close();
+        return $room;
     }
 
     // Create a Room object from a room array
     public function createRoomClass($oneRoom) {
-        $room = new Room($oneRoom['roomNumber'], $oneRoom['type'], $oneRoom['pricePerNight']);
-        // Set other attributes...
+        $room = new Room($oneRoom['room_number'], $oneRoom['room_type'], $oneRoom['price_per_night']);
         return $room;
     }
 
@@ -62,28 +53,6 @@ class DBManagerClient extends DBManager {
         return $roomClassList;
     }
 
-    // Create a Reservation object from a reservation array
-    public function createReservationClass($oneReservation) {
-        $reservation = new Reservation($oneReservation['user'], $oneReservation['room'], $oneReservation['reservationDebut'], $oneReservation['reservationFin'], $oneReservation['nombreDePersonnes']);
-        // Set check-in and check-out dates if available
-        if (isset($oneReservation['checkInDate'])) {
-            $reservation->setReservationDebut($oneReservation['checkInDate']);
-        }
-        if (isset($oneReservation['checkOutDate'])) {
-            $reservation->setReservationFin($oneReservation['checkOutDate']);
-        }
-        // Set other attributes if needed
-        return $reservation;
-    }
-
-    // Create a list of Reservation objects from a list of reservation arrays
-    public function createReservationClassList($reservationsList) {
-        $reservationClassList = [];
-        foreach ($reservationsList as $reservation) {
-            $reservationClassList[] = $this->createReservationClass($reservation);
-        }
-        return $reservationClassList;
-    }
 
     // Create a function to check if a reservation exists for a particular date for a given room
     public function isRoomFree($dateDebut, $dateFin, $roomNumber) {
@@ -97,24 +66,40 @@ class DBManagerClient extends DBManager {
     }
 
     // Consulter les réservations par le client
-    public function getReservationsByClient($clientId) {
+    public function getReservationsByUser($clientId) {
         $conn = $this->getConnection();
-        $sql = "SELECT * FROM reservation WHERE client_id = $clientId";
-        $result = $conn->query($sql);
-        $reservations = array();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $reservations[] = $row;
-            }
-        }
+
+        $stmt = $conn->prepare("SELECT * FROM reservation WHERE user_id = ?");
+        $stmt->bind_param("i", $clientId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $reservations = $result->fetch_all(MYSQLI_ASSOC);
+
+        $stmt->close();
         $conn->close();
-        return $reservations;
+
+        $reservationsObj = [];
+        foreach ($reservations as $reservation){
+            $reservationsObj[] = $this->buildReservationObject($reservation);
+        }
+        return $reservationsObj;
+    }
+
+    public function buildReservationObject($reservation) {
+        $user = $this->getUserById($reservation['user_id']);
+        $room = $this->getRoomByRoomId($reservation['room_id']);
+
+        $roomObject = $this->createRoomClass($room);
+
+        $reservationObject = new Reservation($reservation['id'], $user, $roomObject, $reservation['start_date'], $reservation['end_date'], $reservation['nb_persons']);
+
+        return $reservationObject;
     }
 
     // Effectuer une réservation
     public function makeReservation($roomId, $clientId, $checkInDate, $checkOutDate, $numberOfGuests) {
         $conn = $this->getConnection();
-        $sql = "INSERT INTO reservation (room_id, client_id, check_in_date, check_out_date, number_of_guests) VALUES ($roomId, $clientId, '$checkInDate', '$checkOutDate', $numberOfGuests)";
+        $sql = "INSERT INTO reservation (room_id, user_id, start_date, end_date, reservation_date, nb_persons) VALUES ($roomId, $clientId, '$checkInDate', '$checkOutDate', NOW(), $numberOfGuests)";
         $result = $conn->query($sql);
         $conn->close();
         return $result;
@@ -139,5 +124,25 @@ class DBManagerClient extends DBManager {
     }
 
     // Other methods...
+    public function deleteReservation($reservation_id)
+    {
+        $conn = $this->getConnection();
+
+        $stmt = $conn->prepare("DELETE FROM reservation WHERE id = ?");
+        $stmt->bind_param("i", $reservation_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $stmt->close();
+        $conn->close();
+
+        if($result){
+            return true;
+        }
+
+        return false;
+    }
+
+
 }
 
