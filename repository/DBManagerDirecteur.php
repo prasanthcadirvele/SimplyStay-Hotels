@@ -57,94 +57,6 @@ class DBManagerDirecteur extends DBManagerClient {
         return $success;
     }
 
-    // Function to remove an existing user
-    public function removeUser($userId) {
-        $conn = $this->getConnection();
-        // Implement code to remove the user with $userId from the database
-        $conn->close();
-        // Return success or failure status
-    }
-
-    // Function to modify an existing user
-    public function modifyUser($userId, $modifiedUserData) {
-        $conn = $this->getConnection();
-        // Implement code to modify the user with $userId using $modifiedUserData
-        $conn->close();
-        // Return success or failure status
-    }
-
-    // Function to get all personnel
-    public function getAllPersonnel() {
-        $conn = $this->getConnection();
-        // Implement code to get all personnel from the database
-        $conn->close();
-        // Return personnel data
-    }
-
-    // Function to add a new personnel
-    public function addPersonnel($personnelData) {
-        $conn = $this->getConnection();
-        // Implement code to add a new personnel to the database using $personnelData
-        $conn->close();
-        // Return success or failure status
-    }
-
-    // Function to remove a personnel
-    public function removePersonnel($personnelId) {
-        $conn = $this->getConnection();
-        // Implement code to remove the personnel with $personnelId from the database
-        $conn->close();
-        // Return success or failure status
-    }
-
-    // Function to update a personnel
-    public function updatePersonnel($personnelId, $newPersonnelData) {
-        $conn = $this->getConnection();
-        // Implement code to update the personnel with $personnelId using $newPersonnelData
-        $conn->close();
-        // Return success or failure status
-    }
-
-    // Function to add a new room type
-    public function addRoomType($roomTypeData) {
-        $conn = $this->getConnection();
-        // Implement code to add a new room type to the database using $roomTypeData
-        $conn->close();
-        // Return success or failure status
-    }
-
-    // Function to add a new room
-    public function addRoom($roomData) {
-        $conn = $this->getConnection();
-        // Implement code to add a new room to the database using $roomData
-        $conn->close();
-        // Return success or failure status
-    }
-
-    // Function to modify room information
-    public function modifyRoom($roomId, $modifiedRoomData) {
-        $conn = $this->getConnection();
-        // Implement code to modify room information for room with $roomId using $modifiedRoomData
-        $conn->close();
-        // Return success or failure status
-    }
-
-    // Function to delete a room type
-    public function deleteRoomType($roomTypeId) {
-        $conn = $this->getConnection();
-        // Implement code to delete the room type with $roomTypeId from the database
-        $conn->close();
-        // Return success or failure status
-    }
-
-    // Function to delete a room
-    public function deleteRoom($roomId) {
-        $conn = $this->getConnection();
-        // Implement code to delete the room with $roomId from the database
-        $conn->close();
-        // Return success or failure status
-    }
-
     public function getReservations()
     {
         $conn = $this->getConnection();
@@ -249,6 +161,40 @@ class DBManagerDirecteur extends DBManagerClient {
         } else {
             return false;
         }
+    }
+
+    public function archiveReservation($reservation_id)
+    {
+    $conn = $this->getConnection();
+
+    // First, retrieve the reservation information
+    $stmt = $conn->prepare("SELECT * FROM reservation WHERE id = ?");
+    $stmt->bind_param("i", $reservation_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $reservation = $result->fetch_assoc();
+
+    // Close the statement
+    $stmt->close();
+
+    // Now, insert the reservation into the archived_reservation table
+    $stmt = $conn->prepare("INSERT INTO archived_reservation (id, user_id, room_id, reservation_date, start_date, end_date, nb_persons, archive_date) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->bind_param("iiisssss", $reservation['id'], $reservation['user_id'], $reservation['room_id'], $reservation['reservation_date'], $reservation['start_date'], $reservation['end_date'], $reservation['nb_persons']);
+    $stmt->execute();
+
+    // Close the statement
+    $stmt->close();
+
+    // Finally, delete the reservation from the reservation table
+    $stmt = $conn->prepare("DELETE FROM reservation WHERE id = ?");
+    $stmt->bind_param("i", $reservation_id);
+    $stmt->execute();
+
+    // Close the statement and connection
+    $stmt->close();
+    $conn->close();
+
+    return true;
     }
 }
 

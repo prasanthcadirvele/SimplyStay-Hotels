@@ -60,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 						echo '<li class="nav-item"><a class="nav-link" href="my_reservation.php">Mes Réservations</a></li>';
 						echo '<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>';
                         if($_SESSION['user_type']=='admin'){
+                            echo '<li class="nav-item"><a class="nav-link" href="archived_reservation.php">Réservation Archivées</a></li>';
                             echo '<li class="nav-item"><a class="nav-link" href="users.php">Liste des Utilisateurs</a></li>';
                         }
 					}else{

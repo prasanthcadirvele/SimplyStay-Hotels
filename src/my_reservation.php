@@ -57,8 +57,9 @@ if($_SESSION['user_type']=='admin'){
 					if(isset($_SESSION['username']) && isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']){
                         echo '<li class="nav-item"><a class="nav-link" href="room_list.php">Liste des Chambres</a></li>';
 						echo '<li class="nav-item"><a class="nav-link" href="my_reservation.php">'.$navContent.'</li>';
-						echo '<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>';
+                        echo '<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>';
                         if($_SESSION['user_type']=='admin'){
+                            echo '<li class="nav-item"><a class="nav-link" href="archived_reservation.php">Réservation Archivées</a></li>';
                             echo '<li class="nav-item"><a class="nav-link" href="users.php">Liste des Utilisateurs</a></li>';
                         }
 					}else{
@@ -66,7 +67,9 @@ if($_SESSION['user_type']=='admin'){
                         exit(0);
                     }
 					?>
+
 					<li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+                    
 				</ul>
 			</div>
 		</div></nav>
@@ -121,6 +124,12 @@ if($_SESSION['user_type']=='admin'){
                                             <!-- Delete icon -->
                                             <span class="delete-icon" onclick="document.getElementById('deleteForm').submit();">&#10060;</span>
                                         </form>
+                                        <form id="archiveForm" action="my_reservation.php" method="post">
+                                            <!-- Hidden input for reservation_id -->
+                                            <input type="hidden" name="reservation_id" id="reservation_id" value="<?php echo $reservation->getId() ?>">
+                                            <!-- Archive button -->
+                                            <button type="submit" class="archive-button" onclick="archiveReservation(<?php echo $reservation->getId(); ?>);">Archive</button>
+                                        </form>
                                     </td>
                                 </tr>
                         <?php endforeach;
@@ -130,6 +139,26 @@ if($_SESSION['user_type']=='admin'){
             </div>
         </div>
     </div>
+    <script>
+    function archiveReservation(reservationId) {
+        // Send an AJAX request to the server to archive the reservation
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'archived_reservation.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Success - reload the page to reflect changes
+                    window.location.reload();
+                } else {
+                    // Error handling
+                    console.error('Error archiving reservation:', xhr.responseText);
+                }
+            }
+        };
+        xhr.send('reservation_id=' + reservationId);
+    }
+    </script>
 
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>

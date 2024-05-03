@@ -40,7 +40,7 @@ class DBManagerClient extends DBManager {
 
     // Create a Room object from a room array
     public function createRoomClass($oneRoom) {
-        $room = new Room($oneRoom['room_number'], $oneRoom['room_type'], $oneRoom['price_per_night']);
+        $room = new Room($oneRoom['room_number'], $oneRoom['room_type'], $oneRoom['price_per_night'], $oneRoom['room_description'], $oneRoom['thumbnail_image']);
         return $room;
     }
 

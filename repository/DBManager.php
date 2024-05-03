@@ -11,9 +11,9 @@ class DBManager {
 
     public function __construct() {
         $this->servername = "localhost";
-        $this->username = "hotel_user";
-        $this->password = "admin";
-        $this->dbname = "hotel";
+        $this->username = "root";
+        $this->password = "";
+        $this->dbname = "hotel_management";
     }
 
     public function getConnection() {
